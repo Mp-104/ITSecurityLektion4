@@ -65,6 +65,12 @@ public class Controller {
 
     }
 
+    @GetMapping("/admin")
+    public String adminPage () {
+
+        return "Admin sida";
+    }
+
 
 
 }

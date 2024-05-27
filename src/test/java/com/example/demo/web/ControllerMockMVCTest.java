@@ -88,6 +88,16 @@ public class ControllerMockMVCTest {
 
     }
 
+    @Test
+    public void test4 () throws Exception {
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/admin").with(httpBasic("user","password")))
+                .andExpect(status().is(403));
+                //.andExpect(content().string(containsString("Welcome to my site!"))).andReturn();
+        //.andExpect(content().string(containsString("Welcome to my site")));
+
+    }
+
 
 
 }

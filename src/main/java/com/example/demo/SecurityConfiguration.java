@@ -22,7 +22,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityChain (HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests(
-                authorizeRequests -> authorizeRequests.anyRequest().authenticated()).httpBasic(Customizer.withDefaults()
+                authorizeRequests -> authorizeRequests.requestMatchers("/admin").hasRole("ADMIN").anyRequest().authenticated()).httpBasic(Customizer.withDefaults()
         ).formLogin(formLogin ->
                 formLogin
                         .defaultSuccessUrl("/", true)
@@ -52,7 +52,15 @@ public class SecurityConfiguration {
                 .password(passwordEncoder().encode("password"))
                 .roles("USER")
                 .build();
+
+        var admin = User.builder()
+                .username("admin")
+                .password(passwordEncoder().encode("admin"))
+                .roles("ADMIN")
+                .build();
+
         userDetailsService.createUser(user);
+        userDetailsService.createUser(admin);
 
         return userDetailsService;
 
