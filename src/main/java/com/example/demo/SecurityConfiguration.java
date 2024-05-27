@@ -28,7 +28,7 @@ public class SecurityConfiguration {
                         .defaultSuccessUrl("/", true)
                         .failureUrl("/login?error=true")
                         .permitAll()
-        );
+        ).httpBasic(Customizer.withDefaults());
 
 //        http.authorizeHttpRequests(
 //                authorizeRequests -> authorizeRequests
