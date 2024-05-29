@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:form="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Registration Page</title>
+    <style type="text/css">
+        label {
+            display: inline-block;
+            width: 200px;
+            margin: 5px;
+            text-align: left;
+        }
+        input[type=text], input[type=password], select {
+            display: inline-block;
+            width: 200px;
+        }
+        input[type=radio] {
+            margin-left: 45px;
+        }
+        input[type=checkbox] {
+            margin-right: 190px;
+        }
+        button {
+            padding: 5px;
+            margin: 10px;
+        }
+        .error {
+            color: red;
+            font-style: italic;
+        }
+        span {
+            color: red;
+            font-style; italic;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Registration page</h1>
+
+    <div align="center">
+        <form action="#" th:action="@{/register}" method="post" th:object="${user}">
+
+            <label>Full email: </label>
+            <input type="text" th:field="*{email}" />
+            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Full email error</span>
+
+            <br/>
+
+            <br/>
+
+            <label>Full Password: </label>
+            <input type="password" th:field="*{password}" />
+            <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Full name error</span>
+
+            <br/>
+
+
+            <br/>
+
+            <label>Profession</label>
+            <select th:field="*{profession}" >
+                <option th:each="p : ${listProfession}" th:value="${p}" th:text="${p}" ></option>
+            </select>
+
+            <br/>
+            <br/>
+
+            <button type="submit" >Registrera</button>
+
+
+        </form>
+
+    </div>
+
+</body>
+</html>

@@ -19,13 +19,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
+import org.springframework.web.util.HtmlUtils;
 
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 //@WebMvcTest(Controller.class)
 @SpringBootTest
@@ -162,6 +161,22 @@ public class ControllerMockMVCTest {
                 .andExpect(status().is(200)).andExpect(content().string(containsString("Admin")));
         //.andExpect(content().string(containsString("Welcome to my site!"))).andReturn();
         //.andExpect(content().string(containsString("Welcome to my site")));
+
+    }
+
+    @Test
+    public void test6 () throws Exception {
+
+        // add: .csrf(csrf -> csrf.ignoringRequestMatchers("/register"))  in securityChain after http
+        mockMvc.perform(MockMvcRequestBuilders.post("/register")
+                .param("password", "password")
+                .param("email", "testuser@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("register_success"));
+
+        String x = HtmlUtils.htmlEscape("password");
+
+        System.out.println(x);
 
     }
 

@@ -8,6 +8,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,8 +22,17 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityChain (HttpSecurity http) throws Exception {
 
-        http.authorizeHttpRequests(
-                authorizeRequests -> authorizeRequests.requestMatchers("/admin").hasRole("ADMIN").requestMatchers("/").permitAll().anyRequest().authenticated()).httpBasic(Customizer.withDefaults()
+        http
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/register")) // Added to pass test6
+                .authorizeHttpRequests(
+                authorizeRequests -> authorizeRequests.requestMatchers("/admin")
+                        .hasRole("ADMIN").requestMatchers("/")
+                        .permitAll()
+                        .requestMatchers("/register")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
+                .httpBasic(Customizer.withDefaults()
         ).formLogin(formLogin ->
                 formLogin
                         .defaultSuccessUrl("/", true)
@@ -44,7 +54,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public UserDetailsService userDetailsService () {
+    public InMemoryUserDetailsManager userDetailsService () {
 
         var userDetailsService = new InMemoryUserDetailsManager();
         var user = User.builder()
