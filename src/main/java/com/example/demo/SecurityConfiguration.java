@@ -22,7 +22,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityChain (HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests(
-                authorizeRequests -> authorizeRequests.requestMatchers("/admin").hasRole("ADMIN").anyRequest().authenticated()).httpBasic(Customizer.withDefaults()
+                authorizeRequests -> authorizeRequests.requestMatchers("/admin").hasRole("ADMIN").requestMatchers("/").permitAll().anyRequest().authenticated()).httpBasic(Customizer.withDefaults()
         ).formLogin(formLogin ->
                 formLogin
                         .defaultSuccessUrl("/", true)

@@ -69,9 +69,9 @@ public class ControllerMockMVCTest {
     @Test
     public void test1a () throws Exception {
 
-        // No authenication, can't access to home page, get error 401
+        // No authenication, can't access to home page, get error 401!!! changed "/" to require no authenication, so now will return 200 instead of 401
         this.mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8080/"))
-                .andExpect(status().is(401));
+                .andExpect(status().is(/*401*/ 200));
                 //.andExpect(content().string(containsString("Welcome to my site")));
 
     }
@@ -136,7 +136,7 @@ public class ControllerMockMVCTest {
     @Test
     public void test4 () throws Exception {
 
-        // Trying to log in with user, should return 403, forbidden due to wrong credentials
+        // Trying to access admin but with user credentials, should return 403, forbidden due to wrong credentials
         this.mockMvc.perform(MockMvcRequestBuilders.get("/admin").with(httpBasic("user","password")))
                 .andExpect(status().is(403));
                 //.andExpect(content().string(containsString("Welcome to my site!"))).andReturn();
@@ -147,7 +147,7 @@ public class ControllerMockMVCTest {
     @Test
     public void test4b () throws Exception {
 
-        // Trying to log in with user, should return 401, not autherised due to no credentials
+        // Trying to access admin page without any credentials, should return 401, not autherised due to no credentials
         this.mockMvc.perform(MockMvcRequestBuilders.get("/admin"))
                 .andExpect(status().is(401));
         //.andExpect(content().string(containsString("Welcome to my site!"))).andReturn();
