@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -64,7 +65,7 @@ public class ThymeleafController {
         } else {
 
             UserDetails toRegister = User.builder()
-                    .password(encoder.encode(user.getPassword()))
+                    .password(encoder.encode(HtmlUtils.htmlEscape(user.getPassword())))
                     .username(user.getEmail())
                     .roles("USER")
                     .build();

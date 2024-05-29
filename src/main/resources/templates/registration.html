@@ -41,7 +41,7 @@
         <form action="#" th:action="@{/register}" method="post" th:object="${user}">
 
             <label>Full email: </label>
-            <input type="text" th:field="*{email}" />
+            <input type="text" th:field="*{email}" /><br/>
             <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Full email error</span>
 
             <br/>
@@ -49,7 +49,7 @@
             <br/>
 
             <label>Full Password: </label>
-            <input type="password" th:field="*{password}" />
+            <input type="password" th:field="*{password}" /><br/>
             <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Full name error</span>
 
             <br/>
