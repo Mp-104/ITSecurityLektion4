@@ -1,23 +1,32 @@
 package com.example.demo;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.twofactor.CustomWebAuthenticationDetailsSource;
+import com.example.demo.twofactor.TwoFactorAuthenticationProvider;
+import com.example.demo.twofactor.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration {
+
+    private final CustomWebAuthenticationDetailsSource authenticationDetailsSource;
+
+    public SecurityConfiguration (CustomWebAuthenticationDetailsSource authenticationDetailsSource) {
+        this.authenticationDetailsSource = authenticationDetailsSource;
+    }
 
     @Bean
     public SecurityFilterChain securityChain (HttpSecurity http) throws Exception {
@@ -32,11 +41,11 @@ public class SecurityConfiguration {
                         .permitAll()
                         .anyRequest()
                         .authenticated())
-                ./*httpBasic(Customizer.withDefaults()
-        ).*/formLogin(formLogin ->
+                /*.httpBasic(Customizer.withDefaults()
+        )*/.formLogin(formLogin ->
                 formLogin.loginPage("/login")
-//                        .authenticationDetailsSource(authenticationDetailsSource)
-                        .defaultSuccessUrl("/", true)
+                        .authenticationDetailsSource(authenticationDetailsSource)
+                        .defaultSuccessUrl("/success", true)
                         .failureUrl("/login?error=true")
                         .permitAll()
         )/*.httpBasic(Customizer.withDefaults())*/;
@@ -54,29 +63,48 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean  // Ta bort när vi har implementerat en ny UserDetailService lektion6
-    public InMemoryUserDetailsManager userDetailsService () {
+//    @Bean  // Ta bort när vi har implementerat en ny UserDetailService lektion6
+//    public InMemoryUserDetailsManager userDetailsService () {
+//
+//        var userDetailsService = new InMemoryUserDetailsManager();
+//        var user = User.builder()
+//                .username("user")
+//                .password(passwordEncoder().encode("password"))
+//                .roles("USER")
+//                .build();
+//
+//        var admin = User.builder()
+//                .username("admin")
+//                .password(passwordEncoder().encode("admin"))
+//                .roles("ADMIN")
+//                .build();
+//
+//        userDetailsService.createUser(user);
+//        userDetailsService.createUser(admin);
+//
+//        return userDetailsService;
+//
+//    }
 
-        var userDetailsService = new InMemoryUserDetailsManager();
-        var user = User.builder()
-                .username("user")
-                .password(passwordEncoder().encode("password"))
-                .roles("USER")
-                .build();
+    // Skapa två till @Bean.. AuthenticationManager o DaoAuthenticationProvider
 
-        var admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .build();
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider (UserDetailsService userDetailsService, PasswordEncoder passwordEncoder, UserRepository userRepository) {
 
-        userDetailsService.createUser(user);
-        userDetailsService.createUser(admin);
+        final TwoFactorAuthenticationProvider authProvider = new TwoFactorAuthenticationProvider(userRepository, userDetailsService, passwordEncoder);
 
-        return userDetailsService;
+        return authProvider;
 
     }
 
-    // Skapa två till @Bean.. AuthenticationManager o DaoAuthenticationProvider
+    @Bean
+    public AuthenticationManager authManager (HttpSecurity http, DaoAuthenticationProvider daoAuthenticationProvider) throws Exception {
+
+        AuthenticationManager manager = http.getSharedObject(AuthenticationManagerBuilder.class)
+                .authenticationProvider(daoAuthenticationProvider)
+                .build();
+
+        return manager;
+    }
 
 }

@@ -30,15 +30,15 @@ public class ThymeleafController {
     // Funkar för att dessa är annoterade med @Bean
     private final PasswordEncoder encoder;
 
-    private final InMemoryUserDetailsManager manager; //Ingen manager..
+    //private final InMemoryUserDetailsManager manager; //Ingen manager..
 
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    QRCode qrCode;
+    private final QRCode qrCode;
 
-    public ThymeleafController (PasswordEncoder encoder, InMemoryUserDetailsManager manager, QRCode qrCode, UserRepository userRepository) {
+    public ThymeleafController (PasswordEncoder encoder /*InMemoryUserDetailsManager manager*/, QRCode qrCode, UserRepository userRepository) {
         this.encoder = encoder;
-        this.manager = manager; // Still used? Not in pdf..
+        //this.manager = manager; // Still used? Not in pdf.. not used.
         this.qrCode = qrCode;
         this.userRepository = userRepository;
     }
@@ -116,6 +116,11 @@ public class ThymeleafController {
     public String login () {
 
         return "login";
+    }
+
+    @GetMapping("/success")
+    public String successLogin () {
+        return "success";
     }
 
 }
