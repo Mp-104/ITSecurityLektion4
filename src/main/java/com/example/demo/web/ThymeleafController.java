@@ -1,7 +1,10 @@
 package com.example.demo.web;
 
 import com.example.demo.UserDTO;
+import com.example.demo.twofactor.QRCode;
+import com.example.demo.twofactor.UserRepository;
 import jakarta.validation.Valid;
+import org.jboss.aerogear.security.otp.api.Base32;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,14 +27,20 @@ import java.util.List;
 @Controller
 public class ThymeleafController {
 
-    /*private final*/ PasswordEncoder encoder;
+    // Funkar för att dessa är annoterade med @Bean
+    private final PasswordEncoder encoder;
 
-    /*private final*/ InMemoryUserDetailsManager manager;
+    private final InMemoryUserDetailsManager manager; //Ingen manager..
 
+    UserRepository userRepository;
 
-    public ThymeleafController (PasswordEncoder encoder, InMemoryUserDetailsManager manager) {
+    QRCode qrCode;
+
+    public ThymeleafController (PasswordEncoder encoder, InMemoryUserDetailsManager manager, QRCode qrCode, UserRepository userRepository) {
         this.encoder = encoder;
-        this.manager = manager;
+        this.manager = manager; // Still used? Not in pdf..
+        this.qrCode = qrCode;
+        this.userRepository = userRepository;
     }
 
 //    public ThymeleafController () {
@@ -43,47 +52,70 @@ public class ThymeleafController {
         return "index";
     }
 
-    @GetMapping("/register")
+    @GetMapping("/register" /*"/login"*/)
     public String registerPage (Model model) {
 
         model.addAttribute("user", new UserDTO());
 
-        List<String> listProfession = Arrays.asList("default","Developer", "Tester", "Architect");
-        model.addAttribute("listProfession", listProfession);
+        //com.example.demo.twofactor.User user = new com.example.demo.twofactor.User();
 
-        model.addAttribute("profession", "profession");
+//        List<String> listProfession = Arrays.asList("default","Developer", "Tester", "Architect");
+//        model.addAttribute("listProfession", listProfession);
+//
+//        model.addAttribute("profession", "profession");
 
         return "registration";
 
     }
 
-    @PostMapping("/register")
-    public String submitForm (@Valid @ModelAttribute("user") UserDTO user, BindingResult bindingResult) {
+    @PostMapping("/register" /*"/login"*/)
+    public String submitForm (@Valid @ModelAttribute("user") UserDTO userDTO, BindingResult bindingResult , Model model) {
+
+
 
         if (bindingResult.hasErrors()) {
             return "registration";
         } else {
 
-            UserDetails toRegister = User.builder()
-                    .password(encoder.encode(HtmlUtils.htmlEscape(user.getPassword())))
-                    .username(user.getEmail())
-                    .roles("USER")
-                    .build();
+//            UserDetails toRegister = User.builder()
+//                    .password(encoder.encode(HtmlUtils.htmlEscape(userDTO.getPassword())))
+//                    .username(userDTO.getEmail())
+//                    .roles("USER")
+//                    .build();
+//
+//            manager.createUser(toRegister);
 
-            manager.createUser(toRegister);
 
-            System.out.println("user: " + user.getProfession() + user.getEmail() + user.getPassword());
+            com.example.demo.twofactor.User user = new com.example.demo.twofactor.User();
 
-            return "register_success";
+            user.setEmail(userDTO.getEmail());
+            user.setPassword(encoder.encode(userDTO.getPassword()));
+            user.setSecret(Base32.random());
+            user.setRole("USER");
+
+            userRepository.save(user);
+
+            //userRepository.findByEmail(user.getEmail());
+
+            model.addAttribute("qrcode", qrCode.dataUrl(user));
+
+
+            System.out.println("user: " + userDTO.getProfession() + userDTO.getEmail() + userDTO.getPassword());
+
+            return "qrcode";
+            //return "register_success";
 
 
         }
-
 //        this.encoder = passwordEncoder;
 //        this.manager = inMemoryUserDetailsManager;
 
+    }
 
+    @GetMapping("/login")
+    public String login () {
 
+        return "login";
     }
 
 }

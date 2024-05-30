@@ -32,13 +32,14 @@ public class SecurityConfiguration {
                         .permitAll()
                         .anyRequest()
                         .authenticated())
-                .httpBasic(Customizer.withDefaults()
-        ).formLogin(formLogin ->
-                formLogin
+                ./*httpBasic(Customizer.withDefaults()
+        ).*/formLogin(formLogin ->
+                formLogin.loginPage("/login")
+//                        .authenticationDetailsSource(authenticationDetailsSource)
                         .defaultSuccessUrl("/", true)
                         .failureUrl("/login?error=true")
                         .permitAll()
-        ).httpBasic(Customizer.withDefaults());
+        )/*.httpBasic(Customizer.withDefaults())*/;
 
 //        http.authorizeHttpRequests(
 //                authorizeRequests -> authorizeRequests
@@ -53,7 +54,7 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
+    @Bean  // Ta bort när vi har implementerat en ny UserDetailService lektion6
     public InMemoryUserDetailsManager userDetailsService () {
 
         var userDetailsService = new InMemoryUserDetailsManager();
@@ -75,5 +76,7 @@ public class SecurityConfiguration {
         return userDetailsService;
 
     }
+
+    // Skapa två till @Bean.. AuthenticationManager o DaoAuthenticationProvider
 
 }
