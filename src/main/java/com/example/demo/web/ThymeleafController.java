@@ -2,13 +2,15 @@ package com.example.demo.web;
 
 import com.example.demo.UserDTO;
 import com.example.demo.twofactor.QRCode;
+import com.example.demo.twofactor.User;
 import com.example.demo.twofactor.UserRepository;
 import jakarta.validation.Valid;
 import org.jboss.aerogear.security.otp.api.Base32;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -26,6 +28,8 @@ import java.util.List;
 
 @Controller
 public class ThymeleafController {
+
+    //com.example.demo.twofactor.User user = new com.example.demo.twofactor.User();
 
     // Funkar för att dessa är annoterade med @Bean
     private final PasswordEncoder encoder;
@@ -99,8 +103,9 @@ public class ThymeleafController {
 
             model.addAttribute("qrcode", qrCode.dataUrl(user));
 
+            model.addAttribute("user", user);
 
-            System.out.println("user: " + userDTO.getProfession() + userDTO.getEmail() + userDTO.getPassword());
+            System.out.println("user: " + userDTO.getEmail() + userDTO.getPassword());
 
             return "qrcode";
             //return "register_success";
@@ -113,13 +118,38 @@ public class ThymeleafController {
     }
 
     @GetMapping("/login")
-    public String login () {
+    public String loginPage () {
 
         return "login";
     }
 
+//    @PostMapping("/login")
+//    public String login (User user, Model model) {
+//
+//        model.addAttribute("user", user);
+//
+//        return "success";
+//
+//    }
+
     @GetMapping("/success")
-    public String successLogin () {
+    public String successLogin (Model model/*Model model, UserDTO user*/) {
+
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String email = "";
+//
+//        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+//            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//            email = userDetails.getUsername();
+//        }
+//
+////        System.out.println("success user.email " + user.getEmail());
+//
+//        User user = userRepository.findByEmail(email);
+//        System.out.println(user.getEmail());
+//
+//        model.addAttribute("user", user);
+
         return "success";
     }
 
