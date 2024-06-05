@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.HtmlUtils;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -135,6 +136,15 @@ public class ThymeleafController {
     @GetMapping("/success")
     public String successLogin (Model model/*Model model, UserDTO user*/) {
 
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        // If you need more details about the user
+
+        User userDetails = (User) authentication.getPrincipal();
+
+        model.addAttribute("user", userDetails);
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        String email = "";
 //
@@ -148,7 +158,7 @@ public class ThymeleafController {
 //        User user = userRepository.findByEmail(email);
 //        System.out.println(user.getEmail());
 //
-//        model.addAttribute("user", user);
+       model.addAttribute("user", userDetails);
 
         return "success";
     }
