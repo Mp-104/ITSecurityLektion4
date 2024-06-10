@@ -4,6 +4,7 @@ package com.example.demo;
 import com.example.demo.twofactor.CustomWebAuthenticationDetailsSource;
 import com.example.demo.twofactor.TwoFactorAuthenticationProvider;
 import com.example.demo.twofactor.UserRepository;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,7 +12,9 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,6 +32,11 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer () {
+        return (web) -> web.ignoring().requestMatchers("/h2-console/**");
+    }
+
+    @Bean
     public SecurityFilterChain securityChain (HttpSecurity http) throws Exception {
 
         http
@@ -39,6 +47,7 @@ public class SecurityConfiguration {
                         .permitAll()
                         .requestMatchers("/register")
                         .permitAll()
+//                        .requestMatchers(PathRequest.toH2Console()).permitAll()// added with h2
                         .anyRequest()
                         .authenticated())
                 /*.httpBasic(Customizer.withDefaults()

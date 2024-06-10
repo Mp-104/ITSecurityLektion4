@@ -6,6 +6,7 @@ import com.example.demo.twofactor.User;
 import com.example.demo.twofactor.UserRepository;
 import jakarta.validation.Valid;
 import org.jboss.aerogear.security.otp.api.Base32;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,6 +27,8 @@ import org.springframework.web.util.HtmlUtils;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 public class ThymeleafController {
@@ -40,6 +43,8 @@ public class ThymeleafController {
     private final UserRepository userRepository;
 
     private final QRCode qrCode;
+
+    private static final Logger logger = LoggerFactory.getLogger(ThymeleafController.class);
 
     public ThymeleafController (PasswordEncoder encoder /*InMemoryUserDetailsManager manager*/, QRCode qrCode, UserRepository userRepository) {
         this.encoder = encoder;
