@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public class UserDTO {
 
-    @NotBlank(message = "Ange giltig epost address")
+    @NotBlank(message = "Ange en epost address")
     @Email(message = "Ange giltig epost address")
     private String email;
 

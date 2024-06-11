@@ -1,6 +1,10 @@
 package com.example.demo.web;
 
 import com.example.demo.UserDTO;
+import com.example.demo.h2.H2User;
+import com.example.demo.h2.H2UserRepository;
+import com.example.demo.h2.UserServiceImpl;
+import com.example.demo.mask.Masking;
 import com.example.demo.twofactor.QRCode;
 import com.example.demo.twofactor.User;
 import com.example.demo.twofactor.UserRepository;
@@ -42,15 +46,21 @@ public class ThymeleafController {
 
     private final UserRepository userRepository;
 
+    private final H2UserRepository repository;
+
     private final QRCode qrCode;
+
+    private final UserServiceImpl userService;
 
     private static final Logger logger = LoggerFactory.getLogger(ThymeleafController.class);
 
-    public ThymeleafController (PasswordEncoder encoder /*InMemoryUserDetailsManager manager*/, QRCode qrCode, UserRepository userRepository) {
+    public ThymeleafController (UserServiceImpl userService, PasswordEncoder encoder /*InMemoryUserDetailsManager manager*/, QRCode qrCode, UserRepository userRepository, H2UserRepository repository) {
         this.encoder = encoder;
         //this.manager = manager; // Still used? Not in pdf.. not used.
         this.qrCode = qrCode;
         this.userRepository = userRepository;
+        this.repository = repository;
+        this.userService=userService;
     }
 
 //    public ThymeleafController () {
@@ -96,24 +106,42 @@ public class ThymeleafController {
 //            manager.createUser(toRegister);
 
 
+
+
+
+
             com.example.demo.twofactor.User user = new com.example.demo.twofactor.User();
 
-            user.setEmail(userDTO.getEmail());
+
+
+            user.setEmail(Masking.maskEmail(userDTO.getEmail()));
             user.setPassword(encoder.encode(userDTO.getPassword()));
             user.setSecret(Base32.random());
             user.setRole("USER");
-
             userRepository.save(user);
+
+            H2User user1 = new H2User();
+            user1.setUsername(user.getEmail());
+            user1.setPassword(user.getPassword());
+
+            userService.saveUser(user1);
+//            H2User user = new H2User();
+//            user.setUsername(userDTO.getEmail());
+//            user.setPassword(encoder.encode(userDTO.getPassword()));
+//            user.setRole("USER");
+//
+//            repository.save(user);
 
             //userRepository.findByEmail(user.getEmail());
 
-            model.addAttribute("qrcode", qrCode.dataUrl(user));
+            //model.addAttribute("qrcode", qrCode.dataUrl(user));
 
-            model.addAttribute("user", user);
+            model.addAttribute("users", user);
 
             System.out.println("user: " + userDTO.getEmail() + userDTO.getPassword());
 
-            return "qrcode";
+            return "register_success";
+            //return "qrcode";
             //return "register_success";
 
 

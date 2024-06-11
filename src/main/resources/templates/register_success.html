@@ -15,9 +15,14 @@
 <div align="center">
     <h2>Registration Succeeded!</h2>
 
-    <span>E-mail:</span><span th:text="${user.email}"></span><br/>
-    <span>Password:</span><span th:text="${user.password}"></span><br/>
-    <span>Profession</span><span th:text="${user.profession}" ></span>
+    <!--<span>E-mail:</span><span th:text="${user.email}"></span><br/>
+    <span>Password:</span><span th:text="${user.password}"></span><br/>-->
+
+    <tr th:each="users": ${users}>
+
+        <td th:text="${users.username}"/>
+
+    </tr>
 
 </div>
 </body>
